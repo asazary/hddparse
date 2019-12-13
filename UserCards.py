@@ -73,7 +73,7 @@ class UserCards:
         return cnt
 
     def filter(self, age_min, age_max, hd_type, bio_physical_min, bio_intellectual_min, bio_emotional_min,
-               min_last_login_date):
+               min_last_login_date, city, name):
         self.arrFilter.clear()
         self.arrFilterSize = 0
         self.app.statusPanel.init_progress_bar(max_value=self.app.userCards.size)
@@ -89,6 +89,10 @@ class UserCards:
                                                min_last_login_date.month,
                                                min_last_login_date.day)
             if not (card.lastLogin >= min_last_login_datetime): fl = False
+            if not (len(city) == 0 or card.city.lower().find(city.lower().strip()) > -1): fl = False
+            if not (len(name) == 0 or card.firstName.find(name.split()[0]) > -1): fl = False
+            if not (len(name.split()) < 2 or
+                    ('' if card.secondName is None else card.secondName).find(name.split()[1]) > -1): fl = False
 
             if fl:
                 self.arrFilter.append(card)

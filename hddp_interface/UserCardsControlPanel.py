@@ -80,21 +80,39 @@ class UserCardsControlPanel(tk.Frame):
         self.row2 = tk.Frame(self)
         self.row2.pack(fill=tk.X)
 
+        self.varCity = tk.StringVar(self)
+        self.varCity.set('Санкт-Петербург')
+        cityEntryLabel = tk.Label(self.row2, text="city:")
+        cityEntryLabel.pack(side=tk.LEFT)
+        self.cityEntry = tk.Entry(self.row2, textvariable=self.varCity, width=32)
+        self.cityEntry.pack(side=tk.LEFT, padx=5)
+
+        self.varName = tk.StringVar(self)
+        self.varName.set('')
+        self.nameEntryLabel = tk.Label(self.row2, text="Name")
+        self.nameEntry = tk.Entry(self.row2, textvariable=self.varName, width=30)
+        self.nameEntry.pack(side=tk.LEFT, padx=5)
+
+
+        # ---------------------------------------
+        self.row3 = tk.Frame(self)
+        self.row3.pack(fill=tk.X)
+
         rowsPerPageList = list(range(1, 10))
-        self.rowsPerPage = tk.OptionMenu(self.row2, self.rowsPerPageVar, *rowsPerPageList)
+        self.rowsPerPage = tk.OptionMenu(self.row3, self.rowsPerPageVar, *rowsPerPageList)
         colsPerPageList = list(range(2, 6))
-        self.colsPerPage = tk.OptionMenu(self.row2, self.colsPerPageVar, *colsPerPageList)
-        tk.Label(self.row2, text='rows').pack(side=tk.LEFT)
+        self.colsPerPage = tk.OptionMenu(self.row3, self.colsPerPageVar, *colsPerPageList)
+        tk.Label(self.row3, text='rows').pack(side=tk.LEFT)
         self.rowsPerPage.pack(side=tk.LEFT)
-        tk.Label(self.row2, text='cols').pack(side=tk.LEFT)
+        tk.Label(self.row3, text='cols').pack(side=tk.LEFT)
         self.colsPerPage.pack(side=tk.LEFT)
 
-        self.resizeCardsAreaButton = tk.Button(self.row2, text='Resize cards area', command=self.resize_cards_area)
+        self.resizeCardsAreaButton = tk.Button(self.row3, text='Resize cards area', command=self.resize_cards_area)
         self.resizeCardsAreaButton.pack(side=tk.LEFT, padx=5)
 
-        self.showSimpleCardsButton = tk.Button(self.row2, text='All simple cards', command=self.show_simple_cards)
+        self.showSimpleCardsButton = tk.Button(self.row3, text='All simple cards', command=self.show_simple_cards)
         self.showSimpleCardsButton.pack(side=tk.LEFT, padx=5)
-        self.showFilteredUserCardsButton = tk.Button(self.row2, text='Show user cards',
+        self.showFilteredUserCardsButton = tk.Button(self.row3, text='Show user cards',
                                                      command=self.show_filtered_cards)
         self.showFilteredUserCardsButton.pack(side=tk.LEFT, padx=5)
 
@@ -109,7 +127,9 @@ class UserCardsControlPanel(tk.Frame):
                                   hd_type=self.varType.get(), bio_physical_min=self.varBioPhysical.get(),
                                   bio_intellectual_min=self.varBioIntellectual.get(),
                                   bio_emotional_min=self.varBioEmotional.get(),
-                                  min_last_login_date=self.minLastLoginDate.get_date())
+                                  min_last_login_date=self.minLastLoginDate.get_date(),
+                                  city=self.varCity.get(),
+                                  name=self.varName.get())
         #self.app.statusVar.set('%d cards selected' % self.app.userCards.arrFilterSize)
         self.app.cardsArea.show_page()
 
