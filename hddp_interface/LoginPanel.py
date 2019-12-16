@@ -28,6 +28,6 @@ class LoginPanel(tk.Frame):
             self.loginInd.config(font='Helvetica 12 bold', fg='#009900')
             self.loginButton['state'] = tk.DISABLED
 
-            self.app.simpleSearchPanel.draw_net_search_button()
+            self.app.netSearchPanel.draw_net_search_button()
         else:
             mb.showwarning(title='Error', message=msg)

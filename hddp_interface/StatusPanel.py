@@ -3,6 +3,8 @@ import threading
 import datetime
 from math import ceil
 import time
+from constants import DEBUG_MODE
+
 
 class StatusPanel(tk.Frame):
     def __init__(self, master, app, *args, **kwargs):
@@ -12,8 +14,13 @@ class StatusPanel(tk.Frame):
         self.stopFlagVar = tk.BooleanVar(self)
         self.stopFlagVar.set(False)
 
+        self.progressVar = tk.IntVar(self)
+        self.progressVar.set(0)
+        self.statusVar = tk.StringVar(self)
+        self.statusVar.set('...')
+
         self.statusText = tk.Label(self, text='test', fg='#0000dd', bg='#dddddd',
-                                   font='Helvetica 10 bold', textvariable=self.app.statusVar)
+                                   font='Helvetica 10 bold', textvariable=self.statusVar)
         self.statusText.pack(side=tk.LEFT, ipadx=5)
 
         self.stopButton = tk.Button(self, text='Stop', command=self.stop_button_func)
@@ -29,12 +36,7 @@ class StatusPanel(tk.Frame):
 
         self.progressBar = tk.ttk.Progressbar(self, orient=tk.HORIZONTAL, length=100, mode='determinate')
         self.progressBar.pack(fill=tk.X, expand=1, padx=5)
-        self.progressBar['variable'] = self.app.progressVar
-
-    def init_status_variables(self, status_var, progress_var, stop_flag_var):
-        self.statusVar = status_var
-        self.progressVar = progress_var
-        self.stopFlagVar = stop_flag_var
+        self.progressBar['variable'] = self.progressVar
 
     def init_progress_bar(self, max_value):
         self.progressBar['maximum'] = max_value
@@ -54,6 +56,12 @@ class StatusPanel(tk.Frame):
         self.stopFlagVar.set(True)
         self.disable_stop_button()
 
+    def get_stop_status(self):
+        return self.stopFlagVar.get()
+
+    def set_status(self, text):
+        self.statusVar.set(text)
+
 
 class TimeCounter:
     def __init__(self, master, time_remaining_var):
@@ -72,9 +80,10 @@ class TimeCounter:
         self.stopFlag = False
         self.secondsRemaining = 0
 
-    def start(self, max_progress_val, progress_var):
+    def start(self, max_progress_val, progress_var, stop_status_func):
         self.maxProgressVal = max_progress_val
         self.progressVar = progress_var
+        self.stop_status_func = stop_status_func
         self.secondsRemaining = 0
         self.counter = 0
         self.lastProgressValue = 0
@@ -83,15 +92,17 @@ class TimeCounter:
         self.master.timeRemainingVar.set('Calculating...')
         self.thread = threading.Thread(target=self.action)
         self.thread.start()
+        if DEBUG_MODE:
+            print("TEST: timer counter started")
 
     def action(self):
-        while not self.stopFlag:
+        # while not self.stopFlag:
+        while not self.stop_status_func() and not self.stopFlag:
             # print('counter = %d, secRem = %d, lastProgr = %d' % (self.counter, self.secondsRemaining,
             #                                                      self.lastProgressValue))
-            if self.counter < 5:
+            if self.counter < 3:
                 if self.secondsRemaining > 0:
                     self.secondsRemaining -= 1
-
                 else:
                     pass
             else:
@@ -109,6 +120,9 @@ class TimeCounter:
             self.counter += 1
             time.sleep(1)
             # print(self.counter)
+
+        if DEBUG_MODE:
+            print("TEST: time counter stopped")
 
     def stop(self):
         self.stopFlag = True

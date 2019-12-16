@@ -7,22 +7,27 @@ from datetime import datetime
 class UserCards:
     def __init__(self, master, filename=userCardsFileName):
         self.app = master
-        self.arr = []
+        self.arr = {}
         self.dbFileName = filename
-        self.size = 0
+        self._size = 0
 
         self.arrFilter = []
         self.arrFilterSize = 0
 
+    @property
+    def size(self):
+        return len(self.arr)
+
     def add(self, card):
-        self.arr.append(card)
-        self.size += 1
+        # self.arr.append(card)
+        self.arr[card.uid] = card
+        # self.size += 1
 
-    def get(self, item):
-        return self.arrFilter[item]
+    def get(self, item_number):
+        return self.arrFilter[item_number]
 
-    def __getitem__(self, item):
-        return self.arr[item]
+    def __getitem__(self, item_number):
+        return self.arr[item_number]
 
     def __len__(self):
         return len(self.arr)
@@ -35,20 +40,20 @@ class UserCards:
         #    raise FileExistanceError('File exists')
 
         cnt = 0
-        if not rewrite_file and self.file_exists(): # adding records
+        if not rewrite_file and self.file_exists():  # adding records
             open_flag = 'c'
         else:
             open_flag = 'n'
 
         with shelve.open(self.dbFileName, open_flag) as dbase:
-            for record in self.arr:
-                if not rewrite_records and record.uid in dbase.keys():
+            for uid, record in self.arr.items():
+                if not rewrite_records and uid in dbase.keys():
                     continue
-                dbase[record.uid] = record
+                dbase[uid] = record
                 cnt += 1
                 if inc_progress_func:
                     inc_progress_func()
-        self.app.statusVar.set('%d cards saved' % cnt)
+        self.app.statusPanel.set_status('%d cards saved' % cnt)
         return cnt
 
     def load_from_file(self, init_progress_func=None, inc_progress_func=None, size_var=None):
@@ -62,23 +67,23 @@ class UserCards:
 
             cnt = 0
             for key, value in dbase.items():
-                self.arr.append(value)
+                self.arr[key] = value
                 if inc_progress_func:
                     inc_progress_func()
                 cnt += 1
-        self.size = cnt
+        self._size = cnt
         if size_var:
             size_var.set(cnt)
-        self.app.statusVar.set('Loaded %d cards' % cnt)
+        self.app.statusPanel.set_status('Loaded %d cards' % cnt)
         return cnt
 
     def filter(self, age_min, age_max, hd_type, bio_physical_min, bio_intellectual_min, bio_emotional_min,
-               min_last_login_date, city, name):
+               min_last_login_date, city, name, gender):
         self.arrFilter.clear()
         self.arrFilterSize = 0
         self.app.statusPanel.init_progress_bar(max_value=self.app.userCards.size)
 
-        for card in self.arr:
+        for card in self.arr.values():
             fl = True
             if not (age_min <= card.age <= age_max): fl = False
             if not (hd_type == 'все' or card.hd_type == hd_type): fl = False
@@ -93,19 +98,21 @@ class UserCards:
             if not (len(name) == 0 or card.firstName.find(name.split()[0]) > -1): fl = False
             if not (len(name.split()) < 2 or
                     ('' if card.secondName is None else card.secondName).find(name.split()[1]) > -1): fl = False
+            if not (card.gender == gender or gender == "all" or (gender == "???" and card.gender is None)): fl = False
 
             if fl:
                 self.arrFilter.append(card)
                 self.arrFilterSize += 1
 
             self.app.statusPanel.inc_progress()
-        self.app.statusVar.set('%d cards selected' % self.arrFilterSize)
+        self.app.statusPanel.set_status('%d cards selected' % self.arrFilterSize)
 
     def clear_all(self):
         self.arr.clear()
-        self.size = 0
+        self._size = 0
         self.arrFilter.clear()
         self.arrFilterSize = 0
+
 
 class UserCard:
     def __init__(self):
@@ -141,7 +148,7 @@ class UserCard:
     def init_main(self, uid, premium, link, compatibility_link, img_link, img_data,
                   thumbnail_link, thumbnail_data,
                   first_name, second_name, age, city, zodiac, last_login, parse_date,
-                  hd_type, profile, cross, authority, definition):
+                  hd_type, profile, cross, authority, definition, gender=None):
         self.uid = uid
         self.premium = premium
         self.link = link
@@ -150,7 +157,7 @@ class UserCard:
         self.imgData = img_data
         self.thumbnailLink = thumbnail_link
         self.thumbnailData = thumbnail_data
-        self.gender = None
+        self.gender = gender
         self.firstName = first_name
         self.secondName = second_name
         self.age = age
@@ -163,7 +170,6 @@ class UserCard:
         self.cross = cross
         self.authority = authority
         self.definition = definition
-
 
     def init_compatibility(self, relationship_type_text, relationship_type,
                            bio_physical, bio_intellectual, bio_emotional):

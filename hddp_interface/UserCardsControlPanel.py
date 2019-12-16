@@ -40,6 +40,12 @@ class UserCardsControlPanel(tk.Frame):
         self.hdTypeSel = tk.OptionMenu(self.row1, self.varType, *(['все'] + list(hdTypes.keys())))
         self.hdTypeSel.pack(side=tk.LEFT)
 
+        gender_opts = ['all', 'male', 'female', 'None']
+        self.varGender = tk.StringVar(self)
+        self.varGender.set(gender_opts[0])
+        self.genderSel = tk.OptionMenu(self.row1, self.varGender, *gender_opts)
+        self.genderSel.pack(side=tk.LEFT)
+
         self.bioParamsFrame = tk.Frame(self.row1)
         self.bioParamsFrame.pack(side=tk.LEFT)
 
@@ -65,16 +71,6 @@ class UserCardsControlPanel(tk.Frame):
         bioEmotionalLabel = tk.Label(self.bioParamsFrame, text='эмо', font='Helvetica 8')
         bioEmotionalLabel.grid(row=1, column=2)
 
-        init_month = datetime.now().month - 1
-        init_year = datetime.now().year
-        if init_month == 0:
-            init_month = 12
-            init_year -= 1
-        self.minLastLoginDate = tkcalendar.DateEntry(self.row1, month=init_month, year=init_year,
-                                                     locale='ru_RU')
-        self.minLastLoginDate.pack(side=tk.LEFT)
-        tooltip.Hovertip(self.minLastLoginDate, text='Minimum last login date')
-
         # ---------------------------------------
 
         self.row2 = tk.Frame(self)
@@ -93,6 +89,15 @@ class UserCardsControlPanel(tk.Frame):
         self.nameEntry = tk.Entry(self.row2, textvariable=self.varName, width=30)
         self.nameEntry.pack(side=tk.LEFT, padx=5)
 
+        init_month = datetime.now().month - 1
+        init_year = datetime.now().year
+        if init_month == 0:
+            init_month = 12
+            init_year -= 1
+        self.minLastLoginDate = tkcalendar.DateEntry(self.row2, month=init_month, year=init_year,
+                                                     locale='ru_RU')
+        self.minLastLoginDate.pack(side=tk.LEFT)
+        tooltip.Hovertip(self.minLastLoginDate, text='Minimum last login date')
 
         # ---------------------------------------
         self.row3 = tk.Frame(self)
@@ -116,7 +121,6 @@ class UserCardsControlPanel(tk.Frame):
                                                      command=self.show_filtered_cards)
         self.showFilteredUserCardsButton.pack(side=tk.LEFT, padx=5)
 
-
     def show_simple_cards(self):
         self.app.cardsArea.set_mode_simple()
         self.app.cardsArea.show_page()
@@ -129,8 +133,9 @@ class UserCardsControlPanel(tk.Frame):
                                   bio_emotional_min=self.varBioEmotional.get(),
                                   min_last_login_date=self.minLastLoginDate.get_date(),
                                   city=self.varCity.get(),
-                                  name=self.varName.get())
-        #self.app.statusVar.set('%d cards selected' % self.app.userCards.arrFilterSize)
+                                  name=self.varName.get(),
+                                  gender=self.varGender.get())
+        #self.app.statusPanel.set_status('%d cards selected' % self.app.userCards.arrFilterSize)
         self.app.cardsArea.show_page()
 
     def resize_cards_area(self):

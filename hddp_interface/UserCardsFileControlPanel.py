@@ -54,7 +54,7 @@ class SimpleCardsControlPanel(tk.Frame):
         self.clearMemoryButton.pack(side=tk.LEFT, padx=5)
 
     def load_from_file_and_show(self):
-        self.app.statusVar.set('Loading...')
+        self.app.statusPanel.set_status('Loading...')
         cnt = 0
         self.sizeVar = tk.IntVar(self)
         self.sizeVar.set(0)
@@ -69,13 +69,13 @@ class SimpleCardsControlPanel(tk.Frame):
 
         except FileExistanceError as e:
             mb.showwarning(title='Error', message=str(e))
-        # self.app.statusVar.set('Loaded %d cards' % cnt)
+        # self.app.statusPanel.set_status('Loaded %d cards' % cnt)
 
     def save_to_file(self):
         rewrite_file_flag = self.rewriteFileFlag.get()
         rewrite_records_flag = self.rewriteRecordsFlag.get()
 
-        self.app.statusVar.set('Saving...')
+        self.app.statusPanel.set_status('Saving...')
         self.app.statusPanel.init_progress_bar(max_value=self.app.userCards.size)
         cnt = 0
         try:
@@ -89,10 +89,10 @@ class SimpleCardsControlPanel(tk.Frame):
 
         except FileExistanceError as e:
             mb.showwarning(title='Error', message=str(e))
-        # self.app.statusVar.set('%d cards saved' % cnt)
+        # self.app.statusPanel.set_status('%d cards saved' % cnt)
 
     def show_size(self):
-        self.app.statusVar.set('%d cards in memory' % self.app.userCards.size)
+        self.app.statusPanel.set_status('%d cards in memory' % self.app.userCards.size)
 
     def show_cards(self):
         # self.app.cardsArea.show_page()
@@ -100,4 +100,4 @@ class SimpleCardsControlPanel(tk.Frame):
 
     def clear_memory(self):
         self.app.userCards.clear_all()
-        self.app.statusVar.set('Memory cleared')
+        self.app.statusPanel.set_status('Memory cleared')

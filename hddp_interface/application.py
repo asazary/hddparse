@@ -3,9 +3,9 @@ import tkinter.ttk as ttk
 from hddp_interface.UserProfileArea import UserProfileArea
 
 
-import netFuncs
+import netFunctions as netFuncs
 from SimpleCards import SimpleUserCards
-from hddp_interface import statuspanel, loginpanel, simplesearchpanel, SimpleCardsFileControlPanel, testPanel, \
+from hddp_interface import StatusPanel, LoginPanel, NetSearchPanel, SimpleCardsFileControlPanel, testPanel, \
                            CardsArea, UserCardsFileControlPanel, UserCardsControlPanel
 from UserCards import UserCards
 
@@ -25,11 +25,6 @@ class Application(tk.Tk):
         self.geometry('')
         self.maxsize(height=self.MAX_HEIGHT, width=self.MAX_WIDTH)
 
-        self.progressVar = tk.IntVar(self)
-        self.progressVar.set(0)
-        self.statusVar = tk.StringVar(self)
-        self.statusVar.set('...')
-
         self.mainFrame = tk.Frame(self)
         self.mainFrame.pack(side=tk.LEFT)
         self.userProfileFrame = tk.Frame(self)
@@ -37,23 +32,22 @@ class Application(tk.Tk):
 
         self.tabPanel = ttk.Notebook(self.mainFrame)
 
-        self.loginPanel = loginpanel.LoginPanel(self.mainFrame, self)
-        self.simpleSearchPanel = simplesearchpanel.SimpleSearchPanel(self.mainFrame, self)
+        self.loginPanel = LoginPanel.LoginPanel(self.mainFrame, self)
+        self.netSearchPanel = NetSearchPanel.NetSearchPanel(self.mainFrame, self)
         self.simpleCardsFileControlPanel = SimpleCardsFileControlPanel.SimpleCardsControlPanel(self.mainFrame, self)
         self.userCardsFileControlPanel = UserCardsFileControlPanel.SimpleCardsControlPanel(self.mainFrame, self)
         self.userCardsControlPanel = UserCardsControlPanel.UserCardsControlPanel(self.mainFrame, self)
         self.testPanel = testPanel.TestPanel(self.mainFrame, self)
 
-        self.statusPanel = statuspanel.StatusPanel(self.mainFrame, self)
+        self.statusPanel = StatusPanel.StatusPanel(self.mainFrame, self)
         # self.statusPanel.grid(row=7, ipadx=7, ipady=5, sticky='nsew')
         self.statusPanel.pack(side=tk.BOTTOM, ipadx=7, ipady=5, fill=tk.X)
-        self.statusPanel.init_status_variables(self.statusVar, self.progressVar, self.statusPanel.stopFlagVar)
 
         # self.tabPanel.grid(row=0, ipadx=5, ipady=5, sticky='nsew')
         self.tabPanel.pack(side=tk.TOP, ipadx=5, ipady=5, fill=tk.X)
 
         self.tabPanel.add(self.loginPanel, text='login')
-        self.tabPanel.add(self.simpleSearchPanel, text='simple search')
+        self.tabPanel.add(self.netSearchPanel, text='simple search')
         self.tabPanel.add(self.simpleCardsFileControlPanel, text='simple cards IO')
         self.tabPanel.add(self.userCardsFileControlPanel, text='user cards IO')
         self.tabPanel.add(self.userCardsControlPanel, text='cards control')

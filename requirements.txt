@@ -1,0 +1,5 @@
+tkscrolledframe
+Pillow
+tkcalendar
+requests
+pyquery

@@ -41,21 +41,21 @@ class SimpleCardsControlPanel(tk.Frame):
 
 
     def load_from_file_and_show(self):
-        self.app.statusVar.set('Loading...')
+        self.app.statusPanel.set_status('Loading...')
         cnt = 0
         try:
             cnt = self.app.simpleCards.load_from_file(init_progress_func=self.app.statusPanel.init_progress_bar,
                                                       inc_progress_func=self.app.statusPanel.inc_progress)
         except FileExistanceError as e:
             mb.showwarning(title='Error', message=str(e))
-        self.app.statusVar.set('Loaded %d simple cards' % cnt)
+        self.app.statusPanel.set_status('Loaded %d simple cards' % cnt)
 
 
     def save_to_file(self):
         rewrite_file_flag = self.rewriteFileFlag.get()
         rewrite_records_flag = self.rewriteRecordsFlag.get()
 
-        self.app.statusVar.set('Saving...')
+        self.app.statusPanel.set_status('Saving...')
         self.app.statusPanel.init_progress_bar(max_value=self.app.simpleCards.size())
         cnt = 0
         try:
@@ -64,10 +64,10 @@ class SimpleCardsControlPanel(tk.Frame):
                                                     inc_progress_func=self.app.statusPanel.inc_progress)
         except FileExistanceError as e:
             mb.showwarning(title='Error', message=str(e))
-        self.app.statusVar.set('%d simple cards saved' % cnt)
+        self.app.statusPanel.set_status('%d simple cards saved' % cnt)
 
     def show_size(self):
-        self.app.statusVar.set('%d simple cards in memory' % self.app.simpleCards.size())
+        self.app.statusPanel.set_status('%d simple cards in memory' % self.app.simpleCards.size())
 
     def show_simple_cards(self):
         self.app.simpleCardsArea.show_page()

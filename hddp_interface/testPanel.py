@@ -64,7 +64,7 @@ class TestPanel(tk.Frame):
 
         self.progrStopFlag = False
         self.app.statusPanel.timeCounter.start(max_progress_val=self.counter,
-                                               progress_var=self.app.progressVar)
+                                               progress_var=self.app.statusPanel.progressVar)
         threading.Thread(target=self.inc_progr).start()
 
     def inc_progr(self):

@@ -1,7 +1,8 @@
 import tkinter as tk
 import threading
 
-class SimpleSearchPanel(tk.Frame):
+
+class NetSearchPanel(tk.Frame):
     def __init__(self, master, app, *args, **kwargs):
         tk.Frame.__init__(self, master, *args, **kwargs)
         self.app = app
@@ -34,13 +35,20 @@ class SimpleSearchPanel(tk.Frame):
         self.cityEntry = tk.Entry(self, textvariable=self.varCity)
         self.cityEntry.grid(column=6, row=0)
 
+        threads_opts = list(x for x in range(1, 16))
+        self.varThreadsNumber = tk.IntVar(self)
+        self.varThreadsNumber.set(threads_opts[4])
+        threads_number_label = tk.Label(self, text="threads num")
+        threads_number_label.grid(row=0, column=7, padx=5)
+        self.threadsNumberSel = tk.OptionMenu(self, self.varThreadsNumber, *threads_opts)
+        self.threadsNumberSel.grid(row=0, column=8)
+
         self.startNetSearchButton = tk.Button(self, text='Net Search', command=self.start_net_search)
         self.startFullNetSearchButton = tk.Button(self, text='Full Net Search', command=self.start_full_net_search)
 
-
     def draw_net_search_button(self):
-        self.startNetSearchButton.grid(column=7, row=0, padx=5, pady=5)
-        self.startFullNetSearchButton.grid(column=8, row=0, padx=5, pady=5)
+        self.startNetSearchButton.grid(column=9, row=0, padx=5, pady=5)
+        self.startFullNetSearchButton.grid(column=10, row=0, padx=5, pady=5)
 
     def start_net_search(self):
         params = {'ageFrom': self.varAgeFrom.get(),
@@ -55,5 +63,5 @@ class SimpleSearchPanel(tk.Frame):
                   'ageTo': self.varAgeTo.get(),
                   'gender': self.varGender.get(),
                   'city': self.varCity.get()}
-
-        threading.Thread(target=(lambda: self.app.nf.start_full_net_search(params))).start()
+        threading.Thread(target=(lambda: self.app.nf.start_full_net_search(params,
+                                                                           threads_number=self.varThreadsNumber.get()))).start()
